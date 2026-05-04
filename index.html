@@ -1,1 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المشتل الذكي - الدارة الكهربائية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&family=Vazirmatn:wght@200;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5; 
+            --primary: #2563eb; 
+            --accent: #10b981; 
+            --secondary: #64748b;
+            --card-bg: #f0f2f5;
+            --shadow-light: #ffffff;
+            --shadow-dark: #d1d9e6;
+            --text-main: #1e293b;
+            --table-row-even: rgba(255,255,255,0.3);
+        }
 
+        /* إعدادات الوضع الداكن */
+        [data-theme="dark"] {
+            --bg-color: #0b0e14;
+            --card-bg: #0b0e14;
+            --text-main: #f0f2f5;
+            --secondary: #94a3b8;
+            --shadow-light: #161b22;
+            --shadow-dark: #000000;
+            --table-row-even: rgba(255,255,255,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background 0.3s, color 0.3s, box-shadow 0.3s; }
+
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* هيدر الكبسولة المطور */
+        header.nav-header {
+            position: sticky; top: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 1200px;
+            padding: 15px 40px;
+            background: rgba(240, 242, 245, 0.85);
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+            z-index: 1100;
+            backdrop-filter: blur(12px);
+        }
+
+        [data-theme="dark"] header.nav-header { background: rgba(11, 14, 20, 0.85); }
+
+        .logo { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
+        .logo span { color: var(--accent); font-weight: 800; }
+
+        .nav-container { display: flex; align-items: center; }
+
+        nav a {
+            text-decoration: none; color: var(--secondary); margin-right: 25px;
+            font-weight: 400; transition: 0.3s;
+        }
+        nav a:hover { color: var(--primary); }
+        nav a.active { color: var(--accent); font-weight: 700; }
+
+        /* أزرار التحكم والبورجر */
+        .header-btns { display: flex; gap: 10px; margin-right: 20px; }
+        .icon-btn {
+            background: var(--bg-color); border: none;
+            width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            color: var(--text-main); font-size: 1.1rem;
+        }
+        .burger-btn { display: none; }
+
+        /* القائمة الجانبية (Sidebar) */
+        .sidebar {
+            position: fixed; top: 0; left: -280px;
+            width: 280px; height: 100%;
+            background: var(--bg-color);
+            z-index: 2000;
+            box-shadow: 10px 0 30px var(--shadow-dark);
+            padding: 40px 20px;
+            transition: 0.4s ease;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar a {
+            text-decoration: none; color: var(--text-main);
+            padding: 15px 20px; border-radius: 15px;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; display: none; }
+
+        .header-title { text-align: center; padding: 60px 20px; }
+        .header-title h1 { color: var(--text-main); font-size: 2.5rem; margin-bottom: 10px; }
+        .header-title p { color: var(--secondary); }
+
+        .container { max-width: 1000px; width: 90%; margin: 0 auto 40px; padding: 10px; }
+        
+        .circuit-box {
+            background: var(--card-bg); padding: 30px; border-radius: 30px;
+            box-shadow: 15px 15px 30px var(--shadow-dark), -15px -15px 30px var(--shadow-light);
+            margin-bottom: 30px;
+        }
+
+        .section-title { 
+            color: green; 
+            border-right: 6px solid var(--accent); 
+            padding-right: 15px; margin-bottom: 25px; 
+        }
+
+        /* الجدول المطور */
+        .connections-table {
+            width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--bg-color);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            border-radius: 20px; overflow: hidden;
+        }
+        .connections-table th, .connections-table td {
+            border: 1px solid var(--shadow-dark); padding: 18px; text-align: center;
+        }
+        .connections-table th { background-color: green; color: white; font-weight: 700; border: none; }
+        .connections-table tr:nth-child(even) { background-color: var(--table-row-even); }
+
+        .note-card {
+            background: var(--bg-color); border-right: 5px solid green;
+            padding: 20px; border-radius: 15px; color: var(--secondary); margin-top: 30px;
+            box-shadow: 5px 5px 15px var(--shadow-dark);
+        }
+
+        footer { text-align: center; padding: 40px; color: var(--secondary); font-size: 0.9rem; }
+
+        @media (max-width: 968px) {
+            header.nav-header { top: 0; width: 100%; border-radius: 0; margin: 0; padding: 15px 20px; }
+            nav { display: none; }
+            .burger-btn { display: flex; }
+            .connections-table { font-size: 14px; display: block; overflow-x: auto; }
+        }
+        .p14 {
+            color: #f0f2f5;
+        }
+
+        .button11 {
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 15px 40px;
+            background: #10b981; 
+            color: white !important;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 5px 5px 15px rgba(16, 185, 129, 0.3);
+            transition: 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+
+    
+
+    
+    <p class="p14">+++++++</p>
+    <p class="p14">+++++++</p>
+    <div class="header-title">
+        <h1>نبتة الكركدية</h1>
+        <p>معلومات عامة</p>
+    </div>
+
+    <div class="container">
+        <div class="circuit-box">
+            <h2 class="section-title">حول النبتة:</h2>
+            <p style="line-height: 1.8; color: var(--secondary);">
+              تُعد نبتة الكركديه (الاسم العلمي: Hibiscus sabdariffa) من المحاصيل الزراعية المدارية وشبه المدارية الهامة، وهي تنتمي إلى الفصيلة الخبازية. من الناحية الزراعية، يُصنف الكركديه كشجيرة صيفية حولية أو ثنائية الحول، وتتميز بقدرتها العالية على تحمل درجات الحرارة المرتفعة والجفاف بمجرد استقرار جذورها، بينما تتأثر بشدة بالصقيع والبرودة.
+
+تفضل النبتة التربة الرملية الخفيفة أو الطميية جيدة الصرف، حيث إن ركود المياه حول الجذور يؤدي إلى تعفنها. تبدأ الدورة الزراعية عادةً ببذر البذور في فصل الربيع، وتحتاج النبتة إلى فترة إضاءة طويلة للنمو الخضري، بينما تحفز الأيام القصيرة (نقص ساعات الضوء) عملية التزهير.
+
+الجزء الاقتصادي والأكثر قيمة في المحصول هو "السبلات" (Calyxes) اللحمية الحمراء التي تحيط بالثمرة، والتي يتم جنيها يدوياً عادةً بعد ذبول الأزهار وجفاف البتلات. زراعياً، يعتبر الكركديه محصولاً صديقاً للبيئة وموفراً للمياه مقارنة بمحاصيل أخرى، كما أنه يدخل في دورات زراعية لتحسين خصائص التربة وتنوع الإنتاج.
+            </p>
+        </div>
+
+        <h2 class="section-title">جدول المتطلبات البيئية والزراعية</h2>
+        <table class="connections-table">
+            <thead>
+                <tr>
+                    <th>العنصر المناخي/البيئي</th>
+                    <th>الوصف الفني</th>
+                    <th>الأهمية الزراعية</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>نوع التربة</td>
+                    <td>تربة رملية أو طميية خفيفة جيدة الصرف</td>
+                    <td>تمنع تعفن الجذور وتسمح بتوسع<br> المجموع الجذري</td>
+                </tr>
+                <tr>
+                    <td>درجة الحرارة</td>
+                    <td>بين 25°C و 35°C</td>
+                    <td>توفر الدفء اللازم للنمو السريع<br> وإنتاج الصبغة الحمراء</td>
+                </tr>
+                <tr>
+                    <td>فترة الإضاءة</td>
+                    <td>نبات "نهار قصير" (Short-day plant)</td>
+                    <td>يحتاج ساعات نهار أقل من<br> 12 ساعة لتحفيز التزهير</td>
+                </tr>
+                <tr>
+                    <td>الري</td>
+                    <td>معتدل ومنتظم (يتحمل الجفاف نسبياً)</td>
+                    <td>الرطوبة الزائدة بعد مرحلة الإزهار<br> قد تقلل جودة السبلات</td>
+                </tr>
+                <tr>
+                    <td>موعد الزراعة</td>
+                    <td>فصل الربيع (مارس إلى مايو)</td>
+                    <td>لضمان فترة نمو خضري كافية<br> قبل دخول موسم التزهير</td>
+                </tr>
+                <tr>
+                    <td>طريقة التكاثر</td>
+                    <td>البذور (أساساً) أو العقل</td>
+                    <td>البذور هي الطريقة الأكثر شيوعاً <br>لضمان إنتاجية عالية</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note-card">
+            <strong>⚠️ تنبيه زراعي:</strong><br>يجب الحرص على جني سبلات الكركديه (الجزء الأحمر) بمجرد ذبول الزهرة وقبل أن تبدأ الثمرة الداخلية في تكوين البذور وتجف تماماً. التأخر في الجني يؤدي إلى فقدان السبلات للونها الأحمر القاني المميز وتحولها إلى القوام الخشبي، مما يقلل من جودتها التسويقية وتركيز المواد الفعالة بها. كما يُنصح بتجفيفها في مكان مظلل وجيد التهوية بعيداً عن أشعة الشمس المباشرة للحفاظ على لونها ونكهتها.
+        </div>
+    </div>
+
+    <a class="button11" href="https://aminealmadini.github.io/Amine/index.html">الإنتقال إلى الموقع الرئيسي</a>
+
+    <footer>
+        &copy; 2026 مشروع المشتل الذكي - ثانوية لالة خديجة التقنية
+    </footer>
+
+    <script>
+        // منطق الوضع الليلي (Dark Mode)
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+
+        // منطق القائمة الجانبية (Sidebar)
+        const burgerBtn = document.getElementById('burger-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        }
+
+        burgerBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>
